@@ -86,6 +86,58 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/images/background.png":
+/*!***********************************!*\
+  !*** ./src/images/background.png ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "072d51bcc9c09311d4c2a6708b05bddc.png");
+
+/***/ }),
+
+/***/ "./src/images/hills.png":
+/*!******************************!*\
+  !*** ./src/images/hills.png ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "cfffe4c371f5e11d372b398a87c51dd0.png");
+
+/***/ }),
+
+/***/ "./src/images/platform.png":
+/*!*********************************!*\
+  !*** ./src/images/platform.png ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "ffab39d3487de561be1a081fcfb3806d.png");
+
+/***/ }),
+
+/***/ "./src/images/platformSmallTall.png":
+/*!******************************************!*\
+  !*** ./src/images/platformSmallTall.png ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "0587f9be8e442eb74b2fe283bbf1a947.png");
+
+/***/ }),
+
 /***/ "./src/js/canvas.js":
 /*!**************************!*\
   !*** ./src/js/canvas.js ***!
@@ -95,8 +147,10 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _images_platform_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../images/platform.png */ "./src/images/platform.png");
+/* harmony import */ var _images_hills_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../images/hills.png */ "./src/images/hills.png");
+/* harmony import */ var _images_background_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../images/background.png */ "./src/images/background.png");
+/* harmony import */ var _images_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../images/platformSmallTall.png */ "./src/images/platformSmallTall.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -104,105 +158,259 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 
+
+
+
 var canvas = document.querySelector('canvas');
-var c = canvas.getContext('2d');
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-var mouse = {
-  x: innerWidth / 2,
-  y: innerHeight / 2
-};
-var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66']; // Event Listeners
+var context = canvas.getContext('2d');
+canvas.width = 1024;
+canvas.height = 576;
+var gravity = .5;
 
-addEventListener('mousemove', function (event) {
-  mouse.x = event.clientX;
-  mouse.y = event.clientY;
-});
-addEventListener('resize', function () {
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
-  init();
-}); // Objects
+var Player = /*#__PURE__*/function () {
+  function Player() {
+    _classCallCheck(this, Player);
 
-var _Object = /*#__PURE__*/function () {
-  function Object(x, y, radius, color) {
-    _classCallCheck(this, Object);
-
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
+    this.speed = 10;
+    this.position = {
+      x: 100,
+      y: 100
+    };
+    this.velocity = {
+      x: 0,
+      y: 0
+    };
+    this.width = 30;
+    this.height = 30;
   }
 
-  _createClass(Object, [{
+  _createClass(Player, [{
     key: "draw",
     value: function draw() {
-      c.beginPath();
-      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-      c.fillStyle = this.color;
-      c.fill();
-      c.closePath();
+      context.fillStyle = 'red';
+      context.fillRect(this.position.x, this.position.y, this.width, this.height);
     }
   }, {
     key: "update",
     value: function update() {
       this.draw();
+      this.position.x += this.velocity.x;
+      this.position.y += this.velocity.y;
+
+      if (this.position.y + this.height + this.velocity.y <= canvas.height) {
+        this.velocity.y += gravity;
+      }
     }
   }]);
 
-  return Object;
-}(); // Implementation
+  return Player;
+}();
 
+var Platform = /*#__PURE__*/function () {
+  function Platform(_ref) {
+    var x = _ref.x,
+        y = _ref.y,
+        image = _ref.image;
 
-var objects;
+    _classCallCheck(this, Platform);
+
+    this.position = {
+      x: x,
+      y: y
+    };
+    this.image = image;
+    this.width = image.width;
+    this.height = image.height;
+  }
+
+  _createClass(Platform, [{
+    key: "draw",
+    value: function draw() {
+      context.drawImage(this.image, this.position.x, this.position.y);
+    }
+  }]);
+
+  return Platform;
+}();
+
+var GenericObject = /*#__PURE__*/function () {
+  function GenericObject(_ref2) {
+    var x = _ref2.x,
+        y = _ref2.y,
+        image = _ref2.image;
+
+    _classCallCheck(this, GenericObject);
+
+    this.position = {
+      x: x,
+      y: y
+    };
+    this.image = image;
+    this.width = 580;
+    this.height = image.height;
+  }
+
+  _createClass(GenericObject, [{
+    key: "draw",
+    value: function draw() {
+      context.drawImage(this.image, this.position.x, this.position.y);
+    }
+  }]);
+
+  return GenericObject;
+}();
+
+function createImage(imageScr) {
+  var image = new Image();
+  image.src = imageScr;
+  return image;
+}
+
+var platformImage = createImage(_images_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+var platformSmallTallImage = createImage(_images_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__["default"]);
+var player = new Player();
+var platforms = [];
+var genericObjects = [];
+var keys = {
+  right: {
+    pressed: false
+  },
+  left: {
+    pressed: false
+  }
+};
+var scrollOffset = 0;
 
 function init() {
-  objects = [];
-
-  for (var i = 0; i < 400; i++) {// objects.push()
-  }
-} // Animation Loop
-
+  platformImage = createImage(_images_platform_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  platformSmallTallImage = createImage(_images_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__["default"]);
+  player = new Player();
+  platforms = [new Platform({
+    x: platformImage.width * 3 + 300 - 2 + platformImage.width - platformSmallTallImage.width,
+    y: 270,
+    image: createImage(_images_platformSmallTall_png__WEBPACK_IMPORTED_MODULE_3__["default"])
+  }), new Platform({
+    x: -1,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width - 3,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 2 + 100,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 3 + 300 - 2,
+    y: 470,
+    image: platformImage
+  }), new Platform({
+    x: platformImage.width * 4 + 700 - 2,
+    y: 470,
+    image: platformImage
+  })];
+  genericObjects = [new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_images_background_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+  }), new GenericObject({
+    x: -1,
+    y: -1,
+    image: createImage(_images_hills_png__WEBPACK_IMPORTED_MODULE_1__["default"])
+  })];
+  scrollOffset = 0;
+}
 
 function animate() {
   requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height);
-  c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y); // objects.forEach(object => {
-  //  object.update()
-  // })
+  context.fillStyle = 'white';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  genericObjects.forEach(function (genericObjects) {
+    genericObjects.draw();
+  });
+  platforms.forEach(function (platform) {
+    platform.draw();
+  });
+  player.update();
+
+  if (keys.right.pressed && player.position.x < 400) {
+    player.velocity.x = player.speed;
+  } else if (keys.left.pressed && player.position.x > 100 || keys.left.pressed && scrollOffset === 0 && player.position > 0) {
+    player.velocity.x = -player.speed;
+  } else {
+    player.velocity.x = 0;
+
+    if (keys.right.pressed) {
+      scrollOffset += player.speed;
+      platforms.forEach(function (platform) {
+        platform.position.x -= player.speed;
+      });
+      genericObjects.forEach(function (genericObject) {
+        genericObject.position.x -= player.speed * .66;
+      });
+    } else if (keys.left.pressed && scrollOffset > 0) {
+      scrollOffset -= player.speed;
+      platforms.forEach(function (platform) {
+        platform.position.x += player.speed;
+      });
+      genericObjects.forEach(function (genericObject) {
+        genericObject.position.x += player.speed * .66;
+      });
+    }
+  } //platform collision detector
+
+
+  platforms.forEach(function (platform) {
+    if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
+      player.velocity.y = 0;
+    }
+  }); //Win condition
+
+  if (scrollOffset > platformImage.width * 5 + 300 - 2) {
+    consolelog('win');
+  } //Lose condition
+
+
+  if (player.position.y > canvas.height) {
+    init();
+  }
 }
 
 init();
 animate();
+addEventListener('keydown', function (event) {
+  var x = event.key;
 
-/***/ }),
+  if (x == "w") {
+    player.velocity.y -= 15;
+  }
 
-/***/ "./src/js/utils.js":
-/*!*************************!*\
-  !*** ./src/js/utils.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
+  if (x == "d") {
+    keys.right.pressed = true;
+  }
 
-function randomIntFromRange(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+  if (x == "a") {
+    keys.left.pressed = true;
+  }
 
-function randomColor(colors) {
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+  if (x == "s") {}
+});
+addEventListener('keyup', function (event) {
+  var x = event.key;
 
-function distance(x1, y1, x2, y2) {
-  var xDist = x2 - x1;
-  var yDist = y2 - y1;
-  return Math.sqrt(Math.pow(xDist, 2) + Math.pow(yDist, 2));
-}
+  if (x == "w") {}
 
-module.exports = {
-  randomIntFromRange: randomIntFromRange,
-  randomColor: randomColor,
-  distance: distance
-};
+  if (x == "d") {
+    keys.right.pressed = false;
+  }
+
+  if (x == "a") {
+    keys.left.pressed = false;
+  }
+
+  if (x == "s") {}
+});
 
 /***/ })
 
